@@ -1,9 +1,6 @@
 #
 # Executes commands at the start of an interactive session.
 #
-# Authors:
-#   Sorin Ionescu <sorin.ionescu@gmail.com>
-#
 
 #greeting
 echo -e "\e[1mHello \e[0;3${UCOLORC}m$USERNAME\e[1;39m it is now $(date +%H:%M). Welcome back!\e[0m"
@@ -14,3 +11,47 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+for config_file ($HOME/.yadr/zsh/*.zsh) source $config_file
+
+# direnv
+eval "$(direnv hook zsh)"
+
+# Go
+export GOPATH="$HOME/go"
+export PATH="$GOPATH/bin:$PATH"
+
+# fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# nodenv
+eval "$(nodenv init -)"
+
+# python alias
+alias python="python3"
+alias pip=pip3
+
+# rbenv
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init - zsh)"
+
+# git force push current branch for kaizen dev
+function gfpc (){
+  local current_branch_name=$(git symbolic-ref --short HEAD|tr -d \"\\n\")
+  echo "$@" | sed -E 's/^dev//' | {
+    read num
+    case "$num" in
+      "2" ) num="2nd" ;;
+      "3" ) num="3rd" ;;
+      [3-9]* ) num=$num"th" ;;
+      * ) num="error" ;;
+    esac
+    if [ $num = "error" ] ; then
+      echo "branch not found."
+      return 1
+    fi
+    local deploy_branch_name="deployment/development_"$num
+    echo $deploy_branch_name
+    git push -f origin $current_branch_name:$deploy_branch_name
+  }
+}
+
