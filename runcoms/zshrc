@@ -5,6 +5,9 @@
 #   Sorin Ionescu <sorin.ionescu@gmail.com>
 #
 
+#greeting
+echo -e "\e[1mHello \e[0;3${UCOLORC}m$USERNAME\e[1;39m it is now $(date +%H:%M). Welcome back!\e[0m"
+
 # Source Prezto.
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
